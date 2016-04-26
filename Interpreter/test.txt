@@ -1,0 +1,39 @@
+begin
+integer k;
+integer function F(n);
+begin
+integer n;
+if n <= 0
+then
+F := 1
+else
+F := n * F(n - 1)
+end;
+read(m);
+k := F(m);
+write(k)
+end
+
+begin
+integer n;
+n := 1;
+write(n);
+read(n);
+n := n + 1;
+write(n)
+end
+
+begin
+integer k;
+integer function F(n);
+begin
+integer n;
+if n = 1 then
+F := 1
+else
+F := n + F(n - 1)
+end;
+read(m);
+k := F(m);
+write(k)
+end
