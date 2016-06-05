@@ -37,3 +37,67 @@ read(m);
 k := F(m);
 write(k)
 end
+
+begin
+integer function F(n);
+begin
+integer n;
+write(n);
+F(n + 1)
+end;
+F(0)
+end
+
+begin
+integer function F();
+begin
+F()
+end;
+F()
+end
+
+begin
+integer n;
+n := 1;
+for begin
+write(n)
+end
+end
+
+begin
+integer k;
+integer function F(n);
+begin
+integer n;
+F := 1;
+for begin
+if n <= 1 then break else F := F * n;
+n := n - 1
+end
+end;
+read(m);
+k := F(m);
+write(k)
+end
+
+begin
+integer n;
+n := 0;
+for begin
+if n >= 1000 then break else write(n);
+n := n + 1
+end
+end
+
+begin
+integer n;
+n := 1;
+read(m);
+integer sum;
+sum := 0;
+for begin
+if n > m then break else sum := sum + n;
+n := n + 1
+end;
+write(sum)
+end

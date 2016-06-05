@@ -40,7 +40,9 @@ enum Token {
     tok_lp = -23,      // (
     tok_rp = -24,      // )
     tok_semi = -25,    // ;
-    tok_comma = -26    // ,
+    tok_comma = -26,   // ,
+    tok_for = -27,
+    tok_break = -28
 };
 
 string IdentifierStr;
@@ -49,7 +51,8 @@ int numVal;
 unordered_map<string, int> reserveTokens = {
     {"function", tok_function}, {"integer", tok_integer}, {"if", tok_if},
     {"else", tok_else},         {"then", tok_then},       {"read", tok_read},
-    {"write", tok_write},       {"begin", tok_begin},     {"end", tok_end}};
+    {"write", tok_write},       {"begin", tok_begin},     {"end", tok_end},
+    {"for", tok_for},           {"break", tok_break}};
 
 unordered_map<int, int> binopPrecedence = {
     {tok_plus, 20},    {tok_minus, 20}, {tok_mul, 40}, {tok_less, 10},
@@ -428,6 +431,29 @@ private:
     unique_ptr<ExprAST> body_;
 };
 
+class ForExprAST : public ExprAST {
+public:
+    ForExprAST(unique_ptr<ExprAST> body) : body_(move(body)) {}
+
+    void interpret() override {
+        try {
+            while (1) {
+                body_->interpret();
+            }
+        } catch (int e) { ; }
+    }
+
+private:
+    unique_ptr<ExprAST> body_;
+};
+
+class BreakExprAST : public ExprAST {
+public:
+    BreakExprAST() {}
+
+    void interpret() override { throw 0; }
+};
+
 class ReadAST : public ExprAST {
 public:
     ReadAST(const string &name) : name_(name) {}
@@ -656,6 +682,25 @@ unique_ptr<ExprAST> parseConditionExpr() {
                                          move(else_));
 }
 
+unique_ptr<ExprAST> parseBreakExpr() {
+    getNextToken();
+    return make_unique<BreakExprAST>();
+}
+
+unique_ptr<ExprAST> parseForExpr() {
+    getNextToken();
+    if(curTok != tok_begin) {
+        return logError("需要begin");
+    }
+    getNextToken();
+    unique_ptr<ExprAST> body;
+    if(curTok != tok_end) {
+        body = move(parseExpressions());
+    }
+    getNextToken();
+    return make_unique<ForExprAST>(move(body));
+}
+
 unique_ptr<ExprAST> parsePrimary() {
     switch (curTok) {
     default:
@@ -681,6 +726,10 @@ unique_ptr<ExprAST> parsePrimary() {
     case tok_number:
         // cout << "解析到数字" << endl;
         return parseNumberExpr();
+    case tok_break:
+        return parseBreakExpr();
+    case tok_for:
+        return parseForExpr();
     }
 }
 
